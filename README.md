@@ -1,5 +1,7 @@
 # Advent of Code 2023
 
+[![Continuous Integration](https://github.com/marcelfrey29/advent-of-code-2023/actions/workflows/continuous-integration.yml/badge.svg?branch=main)](https://github.com/marcelfrey29/advent-of-code-2023/actions/workflows/continuous-integration.yml)
+
 https://adventofcode.com/2023
 
 ```bash
