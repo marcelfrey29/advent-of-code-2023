@@ -3,5 +3,6 @@
 https://adventofcode.com/2023
 
 ```bash
-cargo run --bin day-01
+# Day 01
+cargo run --bin day-01 src/bin/day-01-input.txt
 ```
