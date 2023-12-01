@@ -1,0 +1,12 @@
+# Rust
+/target
+
+# Node
+node_modules/
+
+# Vitepress
+**/.vitepress/cache/**
+
+# macOS
+._*
+.DS_STORE
