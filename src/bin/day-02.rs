@@ -9,21 +9,27 @@ fn main() {
     let lines = get_lines_from_file(file_path);
     let result = get_game_id_sum(lines);
 
-    println!("Result: {}", result)
+    println!("Result Part 1: {}, Result Part 2: {}", result.0, result.1)
 }
 
-fn get_game_id_sum(lines: Vec<String>) -> i32 {
-    let mut result = 0;
+fn get_game_id_sum(lines: Vec<String>) -> (i32, i32) {
+    let mut part_one_result = 0;
+    let mut part_two_result = 0;
 
     for line in lines {
         let game: Game = line.into();
-        let x = game.clone().get_max_cube_counts();
-        if x.red <= 12 && x.green <= 13 && x.blue <= 14 {
-            result += game.number
+        let max_cubes_per_color = game.clone().get_max_cube_counts();
+        if max_cubes_per_color.red <= 12
+            && max_cubes_per_color.green <= 13
+            && max_cubes_per_color.blue <= 14
+        {
+            part_one_result += game.number
         }
+        part_two_result +=
+            max_cubes_per_color.red * max_cubes_per_color.green * max_cubes_per_color.blue
     }
 
-    result
+    (part_one_result, part_two_result)
 }
 
 /// Represents a single game.
@@ -156,6 +162,6 @@ fn test_get_game_id_sum() {
             ),
             String::from("Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"),
         ]),
-        8
+        (8, 2286)
     );
 }
