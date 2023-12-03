@@ -11,4 +11,7 @@ cargo run --bin day-01 src/bin/day-01-input.txt 1 # With spelled out numbers
 
 # Day 02
 cargo run --bin day-02 src/bin/day-02-input.txt
+
+# Day 03
+cargo run --bin day-03 src/bin/day-03-input.txt
 ```
