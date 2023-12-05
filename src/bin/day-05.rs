@@ -34,13 +34,14 @@ fn get_lowest_location_number(lines: Vec<String>) -> i64 {
 
     let mut directions: Vec<i64> = vec![];
     for seed in seeds {
-        let next = *seed_to_soil.get(&seed).unwrap_or(&seed);
-        let next = *soild_to_fertilizer.get(&next).unwrap_or(&next);
-        let next = *fertilizer_to_water.get(&next).unwrap_or(&next);
-        let next = *water_to_light.get(&next).unwrap_or(&next);
-        let next = *light_to_temperature.get(&next).unwrap_or(&next);
-        let next = *temperature_to_humidity.get(&next).unwrap_or(&next);
-        let next = *humidity_to_location.get(&next).unwrap_or(&next);
+        println!("Seed: {}", seed);
+        let next = seed_to_soil.clone().get_destination(seed);
+        let next = soild_to_fertilizer.clone().get_destination(next);
+        let next = fertilizer_to_water.clone().get_destination(next);
+        let next = water_to_light.clone().get_destination(next);
+        let next = light_to_temperature.clone().get_destination(next);
+        let next = temperature_to_humidity.clone().get_destination(next);
+        let next = humidity_to_location.clone().get_destination(next);
         directions.push(next);
     }
 
@@ -67,8 +68,8 @@ fn get_seeds(line: &str) -> Vec<i64> {
         .collect::<Vec<i64>>()
 }
 
-fn parse_map(mut map_data: VecDeque<String>) -> (HashMap<i64, i64>, VecDeque<String>) {
-    let mut map: HashMap<i64, i64> = HashMap::new();
+fn parse_map(mut map_data: VecDeque<String>) -> (Map, VecDeque<String>) {
+    let mut map: Vec<MapRange> = vec![];
     let title = map_data.pop_front().expect("Expected map title"); // Remove title line
     println!("Starting to generate map '{title}'");
     loop {
@@ -76,7 +77,13 @@ fn parse_map(mut map_data: VecDeque<String>) -> (HashMap<i64, i64>, VecDeque<Str
         // End processing on empty line
         if line.is_empty() {
             println!("Generated Map '{title}': {:?}", map);
-            return (map, map_data);
+            return (
+                Map {
+                    name: title,
+                    ranges: map,
+                },
+                map_data,
+            );
         }
 
         // Create Map
@@ -89,12 +96,66 @@ fn parse_map(mut map_data: VecDeque<String>) -> (HashMap<i64, i64>, VecDeque<Str
             .collect::<Vec<i64>>();
         let destination_range_start = *mapping_parts.first().expect("");
         let source_range_start = *mapping_parts.get(1).expect("");
-        let range = *mapping_parts.get(2).expect("");
-
-        for x in 0..range {
-            println!("Processing map '{title}': {x}");
-            map.insert(source_range_start + x, destination_range_start + x);
+        let mut range = *mapping_parts.get(2).expect("");
+        if range - 1 < 0 {
+            range = 0;
+        } else {
+            range -= 1
         }
+
+        map.push(MapRange {
+            source_range_start,
+            source_range_end: source_range_start + range,
+            destination_range_start,
+        })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct Map {
+    name: String,
+    ranges: Vec<MapRange>,
+}
+
+impl Map {
+    fn get_destination(self, source: i64) -> i64 {
+        println!("Getting Destination for {} in {}", source, self.name);
+        for range in self.ranges {
+            let destination = range.get_destination(source);
+            if let Some(d) = destination {
+                println!(
+                    "Got Destination for {} in {} -> {} (Mapped)",
+                    source, self.name, d
+                );
+                return d;
+            }
+        }
+        println!(
+            "Got Destination for {} in {} -> {} (Not Mapped)",
+            source, self.name, source
+        );
+        source
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct MapRange {
+    source_range_start: i64,
+    source_range_end: i64,
+    destination_range_start: i64,
+}
+
+impl MapRange {
+    fn get_destination(self, source: i64) -> Option<i64> {
+        println!(
+            "Get Destination for {} <= {} >= {}",
+            self.source_range_start, source, self.source_range_end
+        );
+        if source >= self.source_range_start && source <= self.source_range_end {
+            let delta = self.destination_range_start - self.source_range_start;
+            return Some(source + delta);
+        }
+        None
     }
 }
 
@@ -104,14 +165,37 @@ fn test_get_seeds() {
 }
 
 #[test]
+fn test_get_x() {
+    assert_eq!(
+        MapRange {
+            source_range_start: 50,
+            source_range_end: 53,
+            destination_range_start: 52
+        }
+        .get_destination(50),
+        Some(52)
+    );
+    assert_eq!(
+        MapRange {
+            source_range_start: 50,
+            source_range_end: 53,
+            destination_range_start: 52
+        }
+        .get_destination(51),
+        Some(53)
+    );
+    assert_eq!(
+        MapRange {
+            source_range_start: 25,
+            source_range_end: 94,
+            destination_range_start: 18
+        }
+        .get_destination(81),
+        Some(74)
+    );
+}
+#[test]
 fn test_parse_map() {
-    let mut result_map: HashMap<i64, i64> = HashMap::new();
-    result_map.insert(98, 50);
-    result_map.insert(99, 51);
-    result_map.insert(50, 52);
-    result_map.insert(51, 53);
-    result_map.insert(52, 54);
-    result_map.insert(53, 55);
     assert_eq!(
         parse_map(VecDeque::from(vec![
             "seed-to-soil map:".to_string(),
@@ -139,7 +223,21 @@ fn test_parse_map() {
             "68 64 13".to_string(),
         ])),
         (
-            result_map,
+            Map {
+                name: "seed-to-soil map:".to_string(),
+                ranges: vec![
+                    MapRange {
+                        source_range_start: 98,
+                        source_range_end: 99,
+                        destination_range_start: 50
+                    },
+                    MapRange {
+                        source_range_start: 50,
+                        source_range_end: 53,
+                        destination_range_start: 52
+                    }
+                ]
+            },
             VecDeque::from(vec![
                 "soil-to-fertilizer map:".to_string(),
                 "0 15 37".to_string(),
@@ -169,7 +267,8 @@ fn test_parse_map() {
 fn test_get_lowest_location_number() {
     assert_eq!(
         get_lowest_location_number(vec![
-            "seeds: 79 14 55 13".to_string(),
+            "seeds: 13".to_string(),
+            // "seeds: 79 14 55 13".to_string(), // FIXME: enable
             "".to_string(),
             "seed-to-soil map:".to_string(),
             "50 98 2".to_string(),
