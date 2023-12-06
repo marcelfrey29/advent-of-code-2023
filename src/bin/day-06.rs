@@ -13,7 +13,7 @@ fn main() {
     println!("Result: {}", result)
 }
 
-fn get_ways_to_beat_the_record_result(lines: Vec<String>) -> i32 {
+fn get_ways_to_beat_the_record_result(lines: Vec<String>) -> i64 {
     let races = get_races(lines);
     let mut result = 1; // Safe default for multiplication, might cause problems if we can't win a race at all
     for race in races {
@@ -36,8 +36,8 @@ fn get_races(data: Vec<String>) -> Vec<Race> {
         .collect::<Vec<&str>>()
         .iter()
         .map(|x| x.trim())
-        .map(|x| x.parse::<i32>().expect("Expected Number."))
-        .collect::<Vec<i32>>();
+        .map(|x| x.parse::<i64>().expect("Expected Number."))
+        .collect::<Vec<i64>>();
     let distances = remove_multiple_spaces
         .replace_all(data.get(1).expect("Expected Time Line"), " ")
         .split(':')
@@ -49,8 +49,8 @@ fn get_races(data: Vec<String>) -> Vec<Race> {
         .collect::<Vec<&str>>()
         .iter()
         .map(|x| x.trim())
-        .map(|x| x.parse::<i32>().expect("Expected Number."))
-        .collect::<Vec<i32>>();
+        .map(|x| x.parse::<i64>().expect("Expected Number."))
+        .collect::<Vec<i64>>();
 
     for i in 0..times.len() {
         races.push(Race {
@@ -64,12 +64,12 @@ fn get_races(data: Vec<String>) -> Vec<Race> {
 
 #[derive(Debug, Clone, PartialEq)]
 struct Race {
-    time: i32,
-    distance: i32,
+    time: i64,
+    distance: i64,
 }
 
 impl Race {
-    fn get_possible_combinations_to_win(self) -> i32 {
+    fn get_possible_combinations_to_win(self) -> i64 {
         let mut possible_combinations_to_win = 0;
         for button_hold in 0..self.time {
             let travel_distance = button_hold * (self.time - button_hold);
