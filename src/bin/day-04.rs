@@ -1,4 +1,4 @@
-use std::{env, vec};
+use std::env;
 
 use advent_of_code_2023::get_lines_from_file;
 

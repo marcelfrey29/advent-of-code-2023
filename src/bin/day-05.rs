@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, VecDeque},
-    env, vec,
-};
+use std::{collections::VecDeque, env, vec};
 
 use advent_of_code_2023::get_lines_from_file;
 
@@ -267,8 +264,7 @@ fn test_parse_map() {
 fn test_get_lowest_location_number() {
     assert_eq!(
         get_lowest_location_number(vec![
-            "seeds: 13".to_string(),
-            // "seeds: 79 14 55 13".to_string(), // FIXME: enable
+            "seeds: 79 14 55 13".to_string(),
             "".to_string(),
             "seed-to-soil map:".to_string(),
             "50 98 2".to_string(),

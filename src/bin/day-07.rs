@@ -68,7 +68,7 @@ impl From<String> for Hand {
         // Three elements => Three of a Kind OR Two Pair
         else if map.len() == 3 {
             let mut has_three_same_cards = false;
-            for (key, value) in map.iter() {
+            for (_key, value) in map.iter() {
                 if value == &3 {
                     has_three_same_cards = true;
                 }
@@ -121,6 +121,7 @@ impl Ord for Hand {
         ];
         let card_ranks: HashMap<char, i32> = rankings.into_iter().collect();
 
+        #[allow(clippy::comparison_chain)] // Allow if-else-if-else
         if self.type_of_hand < other.type_of_hand {
             Ordering::Greater
         } else if self.type_of_hand == other.type_of_hand {
