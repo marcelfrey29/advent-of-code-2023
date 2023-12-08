@@ -27,9 +27,16 @@ cargo run --bin day-06 src/bin/day-06-input-part-2.txt
 
 # Day 07
 cargo run --bin day-07 src/bin/day-07-input.txt
+
+# Day 08
+cargo run --bin day-08 src/bin/day-08-input.txt
 ```
 
 ## Learnings
+
+### General - Parsing and working with `Strings`
+
+- Spaces `  `, ` 7`, ...
 
 ### Day 05
 
