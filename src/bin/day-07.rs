@@ -55,13 +55,14 @@ impl From<String> for Hand {
         }
         // Two elements in map => Four of a Type OR Full House
         else if map.len() == 2 {
-            for (_key, value) in map.iter() {
+            if let Some((_key, value)) = map.iter().next() {
                 if value == &3 || value == &2 {
                     hand_type = HandType::FullHouse(5)
                 } else {
                     hand_type = HandType::FoutOfAKind(6)
                 }
-                break;
+            } else {
+                panic!("Expected elements in map.")
             }
         }
         // Three elements => Three of a Kind OR Two Pair
