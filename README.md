@@ -30,6 +30,9 @@ cargo run --bin day-07 src/bin/day-07-input.txt
 
 # Day 08
 cargo run --bin day-08 src/bin/day-08-input.txt
+
+# Day 09
+cargo run --bin day-09 src/bin/day-09-input.txt
 ```
 
 ## Learnings
